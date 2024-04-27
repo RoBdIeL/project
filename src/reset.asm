@@ -1,9 +1,7 @@
 .include "constants.inc"
+
 .segment "ZEROPAGE"
-.importzp player_x, player_y, frame_counter, animation_counter
-.importzp player2_x, player2_y, frame_counter2, animation_counter2
-.importzp player3_x, player3_y, frame_counter3, animation_counter3
-.importzp player4_x, player4_y, frame_counter4, animation_counter4
+.importzp player_x, player_y, scroll, flag_scroll
 
 .segment "CODE"
 .import main
@@ -24,7 +22,7 @@ vblankwait:
   BIT PPUSTATUS
   BPL vblankwait
 
-  LDX #$00
+	LDX #$00
 	LDA #$FF
 clear_oam:
 	STA $0200,X ; set sprite y-positions off the screen
@@ -33,15 +31,20 @@ clear_oam:
 	INX
 	INX
 	BNE clear_oam
-  ; initialize zero-page values
-	LDA #$80
-	STA player_x
-	LDA #$a0
-	STA player_y
 
-  
 vblankwait2:
-  BIT PPUSTATUS
+  BIT $2002
   BPL vblankwait2
+
+; initialize zero-page values
+  LDA #$00
+  STA scroll
+  STA flag_scroll
+
+; set x, y coords for player_1
+  LDA #$00
+  STA player_x
+  LDA #$BF
+  STA player_y
   JMP main
 .endproc
